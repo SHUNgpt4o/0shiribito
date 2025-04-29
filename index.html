@@ -2,10 +2,72 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>押しテスト</title>
+  <title>押しり人エントリー</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      padding-top: 50px;
+      background-color: #f9f9f9;
+    }
+    #pressButton {
+      font-size: 24px;
+      padding: 20px 40px;
+      background-color: green;
+      color: white;
+      border: none;
+      border-radius: 10px;
+    }
+    #status {
+      margin-top: 20px;
+      font-size: 18px;
+      color: #333;
+    }
+  </style>
 </head>
 <body>
   <h1>押しページテスト</h1>
-  <button>BUY</button>
+  <button id="pressButton">BUY</button>
+  <p id="status">5秒以上長押しでエントリー成立</p>
+
+  <script>
+    const button = document.getElementById('pressButton');
+    const status = document.getElementById('status');
+    let timer;
+
+    function startTimer() {
+      timer = setTimeout(() => {
+        status.innerText = "エントリー成立しました！";
+
+        fetch("https://script.google.com/macros/s/AKfycbzbtWoJYvoMZhXutN-mymm6lrw24JA4mIpksBopwbDnUF6cBISSIQI1yEmXMaM4cSkd/exec", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ direction: "BUY" })
+        })
+        .then(res => res.text())
+        .then(data => {
+          console.log("POST成功:", data);
+          status.innerText = "送信成功: " + data;
+        })
+        .catch(error => {
+          console.error("POSTエラー:", error);
+          status.innerText = "送信エラー: " + error;
+        });
+
+      }, 5000);
+    }
+
+    function cancelTimer() {
+      clearTimeout(timer);
+    }
+
+    button.addEventListener("mousedown", startTimer);
+    button.addEventListener("mouseup", cancelTimer);
+    button.addEventListener("touchstart", startTimer);
+    button.addEventListener("touchend", cancelTimer);
+  </script>
 </body>
 </html>
